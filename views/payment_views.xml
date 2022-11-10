@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="payment_acquirer_form" model="ir.ui.view">
+        <field name="name">Billpocket Acquirer Form</field>
+        <field name="model">payment.acquirer</field>
+        <field name="inherit_id" ref="payment.payment_acquirer_form"/>
+        <field name="arch" type="xml">
+            <xpath expr='//group[@name="acquirer"]' position='inside'>
+                <group attrs="{'invisible': [('provider', '!=', 'billpocket')]}">
+                    <field name="bill_seller_account" attrs="{'required':[('provider', '=', 'billpocket'), ('state', '!=', 'disabled')]}"/>
+                    <field name="bill_seller_pass" attrs="{'required':[('provider', '=', 'billpocket'), ('state', '!=', 'disabled')]}" password="True"/>
+                    <field name="bill_process_token" attrs="{'required':[('provider', '=', 'billpocket'), ('state', '!=', 'disabled')]}"/>
+                    <field name="bill_api_url" attrs="{'required':[('provider', '=', 'billpocket'), ('state', '=', 'enabled')]}"/>
+                    <field name="connection_type" attrs="{'required':[('provider', '=', 'billpocket')]}" widget="radio"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="payment_transaction_form" model="ir.ui.view">
+        <field name="name">Billpocket Transaction Form</field>
+        <field name="model">payment.transaction</field>
+        <field name="inherit_id" ref="payment.payment_transaction_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/group" position="inside">
+                <group name="billpocket_details" string="Billpocket" attrs="{'invisible': [('provider', '!=', 'billpocket')]}">
+                    <field name="bill_transaction_id" readonly="1"/>
+                    <field name="bill_external_transaction_id" readonly="1"/>
+                    <field name="bill_status_code" readonly="1"/>
+                    <field name="bill_response_message" readonly="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="transaction_search_bp" model="ir.ui.view">
+        <field name="name">transaction.search.bp</field>
+        <field name="model">payment.transaction</field>
+        <field name="inherit_id" ref="payment.payment_transaction_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator />
+                <filter name="billpocket" string="Billpocket" domain="[('provider', '=', 'billpocket')]" />
+            </xpath>
+        </field>
+    </record>
+
+    <template id="payment_button_inh" name="payment_button_inh" inherit_id="website_sale.payment">
+        <xpath expr="//t[@t-set='submit_button_label']" position="replace">
+            <t t-set="submit_button_label">Pagar ahora</t>
+        </xpath>
+    </template>
+</odoo>

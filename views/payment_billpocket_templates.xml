@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="redirect_form">
+        <form t-att-action="api_url" method="post">
+            <input type="hidden" name="address1" t-att-value="address1"/>
+            <input type="hidden" name="amount" t-att-value="amount"/>
+            <input type="hidden" name="business" t-att-value="business"/>
+            <input type="hidden" name="cancel_return" t-att-value="return_url"/>
+            <input type="hidden" name="city" t-att-value="city"/>
+            <input type="hidden" name="cmd" value="_xclick"/>
+            <input type="hidden" name="country" t-att-value="country"/>
+            <input type="hidden" name="currency_code" t-att-value="currency_code"/>
+            <input type="hidden" name="email" t-att-value="email"/>
+            <input type="hidden" name="first_name" t-att-value="first_name"/>
+            <input t-if="handling"
+                   type="hidden" name="handling" t-att-value="handling"/>
+            <input type="hidden" name="item_name" t-att-value="item_name"/>
+            <input type="hidden" name="item_number" t-att-value="item_number"/>
+            <input type="hidden" name="last_name" t-att-value="last_name"/>
+            <input type="hidden" name="lc" t-att-value="lc"/>
+            <input t-if="notify_url"
+                   type="hidden" name="notify_url" t-att-value="notify_url"/>
+            <input type="hidden" name="return" t-att-value="return_url"/>
+            <input type="hidden" name="rm" value="2"/>
+            <input t-if="state"
+                   type="hidden" name="state" t-att-value="state"/>
+            <input type="hidden" name="zip" t-att-value="zip_code"/>
+            <input type="hidden" name="reference" t-att-value="reference"/>
+        </form>
+    </template>
+
+    <template id="billpocket_complete_payment">
+        <t t-call="website.layout">
+            <t t-set="additional_title">Completar Pago</t>
+            <div id="wrap">
+                <div class="container oe_website_sale py-2">
+                    <div class="row">
+                        <div class='col-12'>
+                            <t t-call="website_sale.wizard_checkout">
+                                <t t-set="step" t-value="45"/>
+                            </t>
+
+                            <div class="w-100" style="margin-top: 30px;"/>
+                            <h3 class="mb24">Datos de Tarjeta:</h3>
+                            <div>
+                                <t t-if="error">
+                                    <h5 class="text-danger" t-esc="error" />
+                                </t>
+                                <form t-att-action="action_url" method="post" class="checkout_autoformat">
+                                <div class="form-row">
+                                    <div class="w-100"/>
+                                    <div t-attf-class="form-group col-lg-6" id="div_nombre">
+                                        <label t-attf-class="col-form-label" for="nombre">Nombre en la Tarjeta</label>
+                                        <input type="text" name="nombre" t-attf-class="form-control" required="1" t-att-value="nombre or ''"/>
+                                    </div>
+                                    <!-- Optional field -->
+<!--                                    <div t-attf-class="form-group col-lg-3 field-name" id="div_birthday">-->
+<!--                                        <label t-attf-class="col-form-label" for="birthday">Fecha Nacimiento</label>-->
+<!--                                        <input type="date" name="birthday" t-attf-class="form-control" required="1" t-att-value="birthday or ''"/>-->
+<!--                                    </div>-->
+                                    <div class="w-100"/>
+                                    <div t-attf-class="form-group col-lg-6" id="div_card">
+                                        <label t-attf-class="col-form-label" for="card">No. Tarjeta</label>
+                                        <input type="text" name="card" t-attf-class="form-control smi" required="1" t-att-value="card or ''"
+                                               id="card" onchange="setCardType(document.getElementById('card').value)"/>
+                                        <svg id="clickmeCard" width="28" height="25" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><i class="eyeeCard fa fa-eye"></i></svg>
+                                    </div>
+                                    <div t-attf-class="form-group col-lg-2" id="div_expire">
+                                        <label t-attf-class="col-form-label" for="expire">Vence (mm/yyyy)</label>
+                                        <input type="text" id="expire" name="expire" t-attf-class="form-control" required="1" t-att-value="expire or ''"/>
+                                    </div>
+                                    <div t-attf-class="form-group col-sm-1" id="div_cvv">
+                                        <label t-attf-class="col-form-label" for="cvv">CVV</label>
+                                        <input type="text" name="cvv" id="cvv" t-attf-class="form-control smi" required="1" t-att-value="cvv or ''"/>
+                                        <svg id="clickmeCvv" width="28" height="25" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><i class="eyeeCvv fa fa-eye"></i></svg>
+                                    </div>
+                                    <div t-attf-class="form-group col-lg-2" id="div_card_type">
+                                        <label t-attf-class="col-form-label" for="card_type">Tipo</label>
+                                        <select name="card_type" t-attf-class="form-control" required="1" id="card_type">
+                                            <option value="">Seleccionar...</option>
+                                            <option value="VI" t-att-selected="card_type == 'VI'">VISA</option>
+                                            <option value="MC" t-att-selected="card_type == 'MC'">Master Card</option>
+                                            <option value="AMEX" t-att-selected="card_type == 'AMEX'">American Express</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="submitted" value="1" />
+                                <input type="hidden" name="reference" t-att-value="reference"/>
+                                <a role="button" href="/shop/checkout?express=1" class="btn btn-secondary mb32 d-none d-xl-inline-block">
+                                    <span class="fa fa-chevron-left" />
+                                    <span class="">Atras</span>
+                                </a>
+                                
+                                <input t-if="website_sale_order and website_sale_order.website_order_line and reference"
+                                    type="submit" name="submit" id="submit"
+                                    class="btn btn-primary float-right d-none d-xl-inline-block" value="Pagar" style="width: 10%">
+                                    <span class="o_loader d-none" style="right: 9%;position: absolute;margin-top: 8px;">
+                                        <i class="fa fa-refresh fa-spin"></i>
+                                    </span>
+                                </input>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    function setCardType(value){
+                        console.log('CARD:'+value+' POS:'+value[0]);
+
+                        var select = document.getElementById('card_type');
+                        if(value != ''){
+                            //visa
+                            if(value[0] == '4'){ select[1].selected = 1; }
+                            //mc
+                            if(value[0] == '5'){ select[2].selected = 1; }
+                            //amex
+                            if(value[0] == '3'){ select[3].selected = 1; }
+                            //other
+                            if(!(['3', '4', '5'].includes(value[0]) )){ select[0].selected = 1; }
+                            console.log('Card type set!');
+                        }
+                        else{
+                            select[0].selected = 1;
+                        }
+                    }
+                </script>
+            </div>
+        </t>
+    </template>
+
+    <template id="billpocket_errors">
+        <t t-call="website.layout">
+            <t t-set="additional_title">Error</t>
+            <div id="wrap">
+                <div class="container oe_website_sale py-2">
+                    <div class="row">
+                        <div class='col-12'>
+                            <t t-call="website_sale.wizard_checkout">
+                                <t t-set="step" t-value="45"/>
+                            </t>
+
+                            <div class="w-100" style="margin-top: 30px;"/>
+                            <h3 class="mb24">Ha ocurrido un error durante la transacción de pago. Por favor intente más tarde!</h3>
+                            <div>
+                                <t t-if="error">
+                                    <h4 class="mb24">Detalles del error:</h4>
+                                    <h5 class="text-danger" t-esc="error" />
+                                </t>
+                                <div class="w-100" style="margin-top: 30px;"/>
+                                <a role="button" href="/shop/checkout?express=1" class="btn btn-secondary mb32 d-none d-xl-inline-block">
+                                    <span class="fa fa-chevron-left" />
+                                    <span class="">Atras</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>
