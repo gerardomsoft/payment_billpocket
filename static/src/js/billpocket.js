@@ -94,7 +94,7 @@ odoo.define('payment_billpocket.master_payments', function (require) {
         _checkType: function () {
             var card = $("#card").val()
             var select = document.getElementById('card_type');
-            if(card != ""){
+            if(card != "" && select){
                 //visa
                 if(card[0] == '4'){ select[1].selected = 1; }
                 //mc
