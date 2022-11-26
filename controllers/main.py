@@ -129,6 +129,7 @@ class BillpocketController(http.Controller):
             else: # redirect
                 # url_conn = werkzeug.urls.url_join(self._get_url_api(), self._sale_url_redirect)
                 # _logger.info("::::: URL REQUEST => %s" % url_conn)
+                res_payment = request.env['payment.transaction'].sudo().search([('reference', '=', post['reference'])])
                 resp = requests.post(url_conn, headers=headers, json=json_data)
                 _logger.info("::::: RESPONSE => %s" % resp.json())
                 if 'status' in resp.json().keys() and resp.json()['status'] == 1:
@@ -143,7 +144,7 @@ class BillpocketController(http.Controller):
                     if 'cvv' in resp.json()['error']['error_message']:
                         message_error += ", " + "CVV incorrecto"
                     message_error += "."
-
+                    res_payment.update({'bill_error_message': '%s \nError%s' % (client_err_msg,message_error)})
                     values.update({'error': '%s \nError%s' % (client_err_msg,message_error)})
                     # return request.render("payment_billpocket.billpocket_errors", {'error': resp.json()})
         elif error:

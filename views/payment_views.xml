@@ -29,6 +29,7 @@
                     <field name="bill_external_transaction_id" readonly="1"/>
                     <field name="bill_status_code" readonly="1"/>
                     <field name="bill_response_message" readonly="1"/>
+                    <field name="bill_error_message" readonly="1"/>
                 </group>
             </xpath>
         </field>

@@ -19,6 +19,7 @@ class PaymentTransaction(models.Model):
     bill_response_message = fields.Char('Transaction Result')
     bill_status_code = fields.Char('Transaction Status Code',
                                 help="3:Approved / 4:Rejected / 6:Refund / 7:Chargeback / 8:Rejected by Fraud Control")
+    bill_error_message = fields.Char('Transaction Error')
 
     # # Transaction status codes:
     # 3 Approved transaction
